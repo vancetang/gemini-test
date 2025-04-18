@@ -7,10 +7,11 @@
 # ///
 import os
 import pathlib
-import json # Import the json module
-import sys # Import the sys module
+import json
+import sys
 from dotenv import load_dotenv
 from google import genai
+from utils.unicode import unescape_unicode, escape_non_ascii
 
 # 載入環境變數
 load_dotenv()
@@ -22,8 +23,8 @@ project_root = script_dir.parent
 
 # 檢查是否提供了檔案名稱參數
 if len(sys.argv) < 2:
-    print("使用方法：python transprop.py <properties 檔案名稱>")
-    print("範例：python transprop.py test")
+    print("使用方法：python i18n_props.py <properties 檔案名稱>")
+    print("範例：python i18n_props.py test")
     exit()
 
 # 從命令列參數取得檔案名稱 (不含副檔名)
@@ -39,7 +40,7 @@ print(f"*** 輸入檔案路徑: {input_file_path}")
 
 # 設定編碼格式
 # 可選產出編碼格式: "latin-1", "utf-8"
-OUT_FILE_ENCODING = "latin-1"
+OUT_FILE_ENCODING = "utf-8"
 print(f"*** 產出檔案編碼格式: {OUT_FILE_ENCODING}")
 
 # 設定 API 金鑰和模型名稱
@@ -59,7 +60,7 @@ client = genai.Client(api_key=google_api_key)
 # 讀取輸入檔案的內容 (逐行讀取)
 try:
     with open(input_file_path, "r", encoding="utf-8") as f:
-        input_lines = f.readlines() # 將所有行讀取到列表中
+        input_lines = [unescape_unicode(line) for line in f.readlines()]
 except FileNotFoundError:
     print(f"錯誤：找不到檔案：{input_file_path}")
     exit()
@@ -69,16 +70,6 @@ except Exception as e:
 
 # 定義要翻譯的語言
 languages = ["en", "zh-CN"]
-
-# 輔助函式：將字串中的非 ASCII 字元轉換為 Unicode 轉義序列
-def escape_non_ascii(text):
-    escaped_text = []
-    for char in text:
-        if ord(char) > 127:
-            escaped_text.append(f'\\u{ord(char):04x}')
-        else:
-            escaped_text.append(char)
-    return "".join(escaped_text)
 
 # 定義批量翻譯的 prompt 模板
 # 要求返回 JSON 格式，key 為原始索引(字串)，value 為翻譯後的內容

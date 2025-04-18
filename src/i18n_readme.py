@@ -73,7 +73,7 @@ for language in languages:
                 temperature=0.5,
                 # 並不是每個模型都有支援thinking_config
                 # 禁用 Thinking Mode(thinking budget)為 0，表示不進行思考
-                thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
+                # thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
             )
         )
 
