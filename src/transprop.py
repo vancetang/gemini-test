@@ -37,6 +37,11 @@ output_dir = project_root
 print(f"*** 專案根目錄: {project_root}")
 print(f"*** 輸入檔案路徑: {input_file_path}")
 
+# 設定編碼格式
+# 可選產出編碼格式: "latin-1", "utf-8"
+OUT_FILE_ENCODING = "latin-1"
+print(f"*** 產出檔案編碼格式: {OUT_FILE_ENCODING}")
+
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
 gemini_model = os.environ.get(
@@ -64,6 +69,16 @@ except Exception as e:
 
 # 定義要翻譯的語言
 languages = ["en", "zh-CN"]
+
+# 輔助函式：將字串中的非 ASCII 字元轉換為 Unicode 轉義序列
+def escape_non_ascii(text):
+    escaped_text = []
+    for char in text:
+        if ord(char) > 127:
+            escaped_text.append(f'\\u{ord(char):04x}')
+        else:
+            escaped_text.append(char)
+    return "".join(escaped_text)
 
 # 定義批量翻譯的 prompt 模板
 # 要求返回 JSON 格式，key 為原始索引(字串)，value 為翻譯後的內容
@@ -179,24 +194,25 @@ for language in languages:
     line_info_map = {index: (key, value) for index, key, value in lines_to_translate_info} 
 
     for i, original_line in enumerate(original_lines):
+        full_line = original_line
+
         if i in translated_results:
-            # 如果此行有翻譯結果，使用原始 key 和翻譯後的 value
-            # 需要從 original_line 重新解析 key，或者使用 line_info_map
-            # 重新解析 key 比較簡單，避免查找 line_info_map
             if '=' in original_line:
                  key, _ = original_line.split('=', 1)
                  key = key.strip()
-                 output_lines.append(f"{key}={translated_results[i]}")
-            else:
-                 # 如果原始行有翻譯結果但沒有 '=' (不應該發生)，保留原始行
-                 output_lines.append(original_line)
-        else:
-            # 如果此行沒有翻譯結果 (空行、註解或值為空)，保留原始行
-            output_lines.append(original_line)
+                 # 先串接 key=value，再整體進行轉義
+                 full_line = f"{key}={translated_results[i]}"
+        
+        # 根據輸出編碼決定是否進行非 ASCII 字元轉義
+        if OUT_FILE_ENCODING.lower() == "latin-1":
+            full_line = escape_non_ascii(full_line)
+        
+        # 將處理後的行加入輸出列表
+        output_lines.append(full_line)
 
     # 將所有處理後的行寫入輸出檔案
     try:
-        with open(output_filename, "w", encoding="utf-8") as outfile:
+        with open(output_filename, "w", encoding=OUT_FILE_ENCODING) as outfile:
             outfile.write('\n'.join(output_lines))
 
         print(f"翻譯後的內容已成功儲存至 {output_filename}")
