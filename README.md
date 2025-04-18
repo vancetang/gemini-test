@@ -39,7 +39,7 @@
 
 ### 🌍 Gemini 翻譯 README.md
 ```python
-uv run src/translate.py
+uv run src/i18n_readme.py
 ```
 
 > **📝 注意**  
@@ -48,11 +48,11 @@ uv run src/translate.py
 
 ### 🌍 Gemini 翻譯指定Properties
 ```python
-uv run src/transprop.py <properties_file 不含附檔名>
+uv run src/i18n_props.py <properties_file 不含附檔名>
 ```
 例如：檔案為 `test.properties`
 ```bash
-uv run src/transprop.py test
+uv run src/i18n_props.py test
 ```
 
 > **⚠️ 警告**  
