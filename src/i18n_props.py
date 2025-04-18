@@ -9,9 +9,31 @@ import os
 import pathlib
 import json
 import sys
+import argparse
 from dotenv import load_dotenv
 from google import genai
 from utils.unicode import unescape_unicode, escape_non_ascii
+
+# 設置命令列參數解析
+parser = argparse.ArgumentParser(
+    description="翻譯 .properties 檔案到多種語言",
+    usage="%(prog)s filename [--unicode]"
+)
+parser.add_argument(
+    "filename",
+    help="要翻譯的 .properties 檔案名稱（不含副檔名）"
+)
+parser.add_argument(
+    "--unicode",
+    action="store_true",
+    default=False,  # 預設為 False
+    help="是否使用 Unicode 編碼（預設為 False）"
+)
+args = parser.parse_args()
+
+# 從參數取得值
+filename_prefix = args.filename
+IS_UNICODE = args.unicode
 
 # 載入環境變數
 load_dotenv()
@@ -21,15 +43,6 @@ script_dir = pathlib.Path(__file__).parent
 # 取得專案根目錄 (src 的上一層)
 project_root = script_dir.parent
 
-# 檢查是否提供了檔案名稱參數
-if len(sys.argv) < 2:
-    print("使用方法：python i18n_props.py <properties 檔案名稱>")
-    print("範例：python i18n_props.py test")
-    exit()
-
-# 從命令列參數取得檔案名稱 (不含副檔名)
-filename_prefix = sys.argv[1]
-
 # 建立輸入檔案的絕對路徑
 input_file_path = project_root / f"{filename_prefix}.properties"
 # 建立輸出檔案的目錄 (專案根目錄)
@@ -38,10 +51,10 @@ output_dir = project_root
 print(f"*** 專案根目錄: {project_root}")
 print(f"*** 輸入檔案路徑: {input_file_path}")
 
-# 設定編碼格式
-# 可選產出編碼格式: "latin-1", "utf-8"
-OUT_FILE_ENCODING = "utf-8"
-print(f"*** 產出檔案編碼格式: {OUT_FILE_ENCODING}")
+# 設定檔案編碼格式
+FILE_ENCODING = "utf-8"
+print(f"*** 產出檔案編碼格式: {FILE_ENCODING}")
+print(f"*** 產出檔案是否轉為Unicode編碼: {IS_UNICODE}")
 
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
@@ -100,7 +113,7 @@ for language in languages:
 
     # 清空目標語系檔案
     try:
-        with open(output_filename, "w", encoding="utf-8") as outfile:
+        with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
             pass # 開啟寫入模式並立即關閉，清空檔案內容
         print(f"\n--- 開始翻譯為 {language} ---")
         print(f"已清空檔案：{output_filename}")
@@ -195,7 +208,7 @@ for language in languages:
                  full_line = f"{key}={translated_results[i]}"
         
         # 根據輸出編碼決定是否進行非 ASCII 字元轉義
-        if OUT_FILE_ENCODING.lower() == "latin-1":
+        if IS_UNICODE:
             full_line = escape_non_ascii(full_line)
         
         # 將處理後的行加入輸出列表
@@ -203,7 +216,7 @@ for language in languages:
 
     # 將所有處理後的行寫入輸出檔案
     try:
-        with open(output_filename, "w", encoding=OUT_FILE_ENCODING) as outfile:
+        with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
             outfile.write('\n'.join(output_lines))
 
         print(f"翻譯後的內容已成功儲存至 {output_filename}")
