@@ -27,14 +27,14 @@ print(f"*** 輸入檔案路徑: {readme_path}")
 
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
-gemini_model = os.environ.get(
-    "GEMINI_MODEL", "gemini-2.0-flash"
-)
+gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 print(f"*** 使用的模型: {gemini_model}")
 
 if not google_api_key:
-    print("錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。")
+    print(
+        "錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。"
+    )
     exit()
 
 client = genai.Client(api_key=google_api_key)
@@ -67,14 +67,15 @@ for language in languages:
     try:
         # 呼叫 Gemini API 進行翻譯
         response = client.models.generate_content(
-            model=gemini_model, contents=contents_to_translate,
+            model=gemini_model,
+            contents=contents_to_translate,
             config=genai.types.GenerateContentConfig(
                 # 設定模型的隨機程度(0-1)，較高的值會使輸出更具變化性，而較低的值(接近 0)會使輸出更具確定性
                 temperature=0.5,
                 # 並不是每個模型都有支援thinking_config
                 # 禁用 Thinking Mode(thinking budget)為 0，表示不進行思考
                 # thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
-            )
+            ),
         )
 
         # 將翻譯後的內容寫入對應的 README 檔案

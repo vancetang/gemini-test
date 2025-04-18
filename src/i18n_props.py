@@ -15,18 +15,14 @@ from utils.unicode import unescape_unicode, escape_non_ascii
 
 # 設置命令列參數解析
 parser = argparse.ArgumentParser(
-    description="翻譯 .properties 檔案到多種語言",
-    usage="%(prog)s filename [--unicode]"
+    description="翻譯 .properties 檔案到多種語言", usage="%(prog)s filename [--unicode]"
 )
-parser.add_argument(
-    "filename",
-    help="要翻譯的 .properties 檔案名稱（不含副檔名）"
-)
+parser.add_argument("filename", help="要翻譯的 .properties 檔案名稱（不含副檔名）")
 parser.add_argument(
     "--unicode",
     action="store_true",
     default=False,  # 預設為 False
-    help="是否使用 Unicode 編碼（預設為 False）"
+    help="是否使用 Unicode 編碼（預設為 False）",
 )
 args = parser.parse_args()
 
@@ -57,14 +53,14 @@ print(f"*** 產出檔案是否轉為Unicode編碼: {IS_UNICODE}")
 
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
-gemini_model = os.environ.get(
-    "GEMINI_MODEL", "gemini-2.0-flash"
-)
+gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 print(f"*** 使用的模型: {gemini_model}")
 
 if not google_api_key:
-    print("錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。")
+    print(
+        "錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。"
+    )
     exit()
 
 client = genai.Client(api_key=google_api_key)
@@ -113,43 +109,45 @@ for language in languages:
     # 清空目標語系檔案
     try:
         with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
-            pass # 開啟寫入模式並立即關閉，清空檔案內容
+            pass  # 開啟寫入模式並立即關閉，清空檔案內容
         print(f"\n--- 開始翻譯為 {language} ---")
         print(f"已清空檔案：{output_filename}")
     except Exception as e:
         print(f"清空檔案 {output_filename} 時發生錯誤：{e}")
-        continue # 跳過此語言的翻譯
+        continue  # 跳過此語言的翻譯
 
-    lines_to_translate_info = [] # 儲存 (index, key, value) 的列表
-    original_lines = [] # 儲存所有原始行
+    lines_to_translate_info = []  # 儲存 (index, key, value) 的列表
+    original_lines = []  # 儲存所有原始行
 
     # 遍歷輸入行，識別需要翻譯的行並儲存資訊
     for i, line in enumerate(input_lines):
-        original_lines.append(line.rstrip('\n')) # 儲存原始行內容 (移除換行符)
+        original_lines.append(line.rstrip("\n"))  # 儲存原始行內容 (移除換行符)
         stripped_line = line.strip()
 
         # 忽略空行或註解行
-        if not stripped_line or stripped_line.startswith('#'):
+        if not stripped_line or stripped_line.startswith("#"):
             continue
 
         # 處理 key=value 格式的行
-        if '=' in stripped_line:
-            key, value = stripped_line.split('=', 1) # 只在第一個 '=' 處分割
+        if "=" in stripped_line:
+            key, value = stripped_line.split("=", 1)  # 只在第一個 '=' 處分割
             key = key.strip()
             value = value.strip()
 
-            if value: # 如果值不為空，則加入待翻譯列表
+            if value:  # 如果值不為空，則加入待翻譯列表
                 lines_to_translate_info.append((i, key, value))
 
-    translated_results = {} # 儲存翻譯結果 {index: translated_value}
+    translated_results = {}  # 儲存翻譯結果 {index: translated_value}
 
     # 分批處理需要翻譯的行
     for i in range(0, len(lines_to_translate_info), BATCH_SIZE):
         batch_info = lines_to_translate_info[i : i + BATCH_SIZE]
-        batch_values_dict = {str(index): value for index, key, value in batch_info} # 使用索引作為 key
+        batch_values_dict = {
+            str(index): value for index, key, value in batch_info
+        }  # 使用索引作為 key
 
         if not batch_values_dict:
-            continue # 如果批次為空，跳過
+            continue  # 如果批次為空，跳過
 
         print(f"  正在處理批次 {i // BATCH_SIZE + 1} (共 {len(batch_info)} 筆)...")
 
@@ -161,27 +159,30 @@ for language in languages:
             response = client.models.generate_content(
                 model=gemini_model,
                 # 傳遞 prompt 和 JSON 格式的待翻譯內容
-                contents=[batch_prompt, json.dumps(batch_values_dict, ensure_ascii=False)], 
+                contents=[
+                    batch_prompt,
+                    json.dumps(batch_values_dict, ensure_ascii=False),
+                ],
                 config=genai.types.GenerateContentConfig(
                     temperature=0.3,
-                )
+                ),
             )
 
             # 解析 API 返回的 JSON 結果
             response_text = response.text.strip()
             # 嘗試從可能的 markdown 程式碼區塊中提取 JSON
-            if response_text.startswith('```json'):
-                 response_text = response_text[len('```json'):].strip()
-                 if response_text.endswith('```'):
-                     response_text = response_text[:-len('```')].strip()
+            if response_text.startswith("```json"):
+                response_text = response_text[len("```json") :].strip()
+                if response_text.endswith("```"):
+                    response_text = response_text[: -len("```")].strip()
 
             batch_translated_values = json.loads(response_text)
 
             # 將翻譯結果儲存到 translated_results 字典中
             for original_index_str, translated_value in batch_translated_values.items():
-                 original_index = int(original_index_str)
-                 # 儲存翻譯結果並移除首尾空白
-                 translated_results[original_index] = translated_value.strip()
+                original_index = int(original_index_str)
+                # 儲存翻譯結果並移除首尾空白
+                translated_results[original_index] = translated_value.strip()
 
         except json.JSONDecodeError as e:
             print(f"  錯誤：解析 API 返回的 JSON 時發生錯誤：{e}")
@@ -194,29 +195,31 @@ for language in languages:
     # 構造最終的輸出內容
     output_lines = []
     # 建立索引到 (key, value) 的映射
-    line_info_map = {index: (key, value) for index, key, value in lines_to_translate_info} 
+    line_info_map = {
+        index: (key, value) for index, key, value in lines_to_translate_info
+    }
 
     for i, original_line in enumerate(original_lines):
         full_line = original_line
 
         if i in translated_results:
-            if '=' in original_line:
-                 key, _ = original_line.split('=', 1)
-                 key = key.strip()
-                 # 先串接 key=value，再整體進行轉義
-                 full_line = f"{key}={translated_results[i]}"
-        
+            if "=" in original_line:
+                key, _ = original_line.split("=", 1)
+                key = key.strip()
+                # 先串接 key=value，再整體進行轉義
+                full_line = f"{key}={translated_results[i]}"
+
         # 根據輸出編碼決定是否進行非 ASCII 字元轉義
         if IS_UNICODE:
             full_line = escape_non_ascii(full_line)
-        
+
         # 將處理後的行加入輸出列表
         output_lines.append(full_line)
 
     # 將所有處理後的行寫入輸出檔案
     try:
         with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
-            outfile.write('\n'.join(output_lines))
+            outfile.write("\n".join(output_lines))
 
         print(f"翻譯後的內容已成功儲存至 {output_filename}")
 
