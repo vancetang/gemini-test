@@ -18,6 +18,7 @@ headers = {
 }
 
 # set your query params
+# 目前使用的token只能查詢免費的股票代號
 ticker = 'NVDA'     # stock ticker
 period = 'annual'   # possible values are 'annual', 'quarterly', or 'ttm'
 limit = 30          # number of periods to return
