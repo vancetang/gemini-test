@@ -34,14 +34,16 @@ input_file_path = project_root / f"{filename_prefix}.properties"
 # 建立輸出檔案的目錄 (專案根目錄)
 output_dir = project_root
 
-print("*** 專案根目錄:", project_root)
-print("*** 輸入檔案路徑:", input_file_path)
+print(f"*** 專案根目錄: {project_root}")
+print(f"*** 輸入檔案路徑: {input_file_path}")
 
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
 gemini_model = os.environ.get(
     "GEMINI_MODEL", "gemini-2.0-flash"
 )
+
+print(f"*** 使用的模型: {gemini_model}")
 
 if not google_api_key:
     print("錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。")
@@ -61,7 +63,7 @@ except Exception as e:
     exit()
 
 # 定義要翻譯的語言
-languages = ["zh-CN"]
+languages = ["en", "zh-CN"]
 
 # 定義批量翻譯的 prompt 模板
 # 要求返回 JSON 格式，key 為原始索引(字串)，value 為翻譯後的內容

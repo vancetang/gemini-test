@@ -22,14 +22,16 @@ readme_path = project_root / "README.md"
 # 建立輸出檔案的目錄 (專案根目錄)
 output_dir = project_root
 
-print("*** 專案根目錄:", project_root)
-print("*** README.md 路徑:", readme_path)
+print(f"*** 專案根目錄: {project_root}")
+print(f"*** 輸入檔案路徑: {readme_path}")
 
 # 設定 API 金鑰和模型名稱
 google_api_key = os.environ.get("GOOGLE_API_KEY")
 gemini_model = os.environ.get(
     "GEMINI_MODEL", "gemini-2.0-flash"
 )
+
+print(f"*** 使用的模型: {gemini_model}")
 
 if not google_api_key:
     print("錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。")
@@ -52,6 +54,8 @@ except Exception as e:
 languages = ["en", "zh-CN"]
 
 for language in languages:
+    print(f"\n--- 開始翻譯為 {language} ---")
+
     # 準備翻譯請求的內容
     prompt = f"""
     請將以下文字翻譯成 {language} 語系，保留原文中的 URL 網址不進行翻譯，
@@ -84,3 +88,5 @@ for language in languages:
 
     except Exception as e:
         print(f"處理過程中發生錯誤：{e}")
+
+print("\n--- 翻譯完成 ---")
