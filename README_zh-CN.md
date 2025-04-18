@@ -23,7 +23,7 @@
     接着，编辑 `.env` 文件，将您获取的 API 密钥填入 `GOOGLE_API_KEY` 字段。
 
 3.  🛠️ **安装 uv:**
-    *   **建议 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
+    *   **推荐 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
     *   **Windows (使用 Chocolatey):**
         ```bash
         choco install -y uv
@@ -42,18 +42,18 @@
 uv run src/translate.py
 ```
 
-> **📝 注意**
+> **📝 注意**  
 > 目前使用的模型为 gemini-2.5-flash-preview-04-17，处理小型文件，速度表现与其他模型相差不大。
 
 
 ### 🌍 Gemini 翻译指定 Properties 文件
 ```python
-uv run src/transprop.py <properties_file 不含文件扩展名>
+uv run src/transprop.py <properties_file 不含扩展名>
 ```
 例如：文件为 `test.properties`
 ```bash
 uv run src/transprop.py test
 ```
 
-> **⚠️ 警告**
+> **⚠️ 警告**  
 > 由于 properties 文件通常包含大量数据，建议使用 gemini-2.0-flash 模型以确保高效处理。
