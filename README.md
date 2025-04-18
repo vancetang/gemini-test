@@ -37,23 +37,34 @@
 
 ## 🚀 使用方式
 
-### 🌍 Gemini 翻譯 README.md
-```python
+### 🌍 翻譯 `README.md`
+
+使用以下指令透過 Google Gemini API 對 `README.md` 進行多語系翻譯：
+
+```bash
 uv run src/i18n_readme.py
 ```
 
 > **📝 注意**  
-> 目前使用的模型為 gemini-2.5-flash-preview-04-17，處理小型檔案，速度表現與其他模型相差不大。
+> 目前使用的模型為 `gemini-2.5-flash-preview-04-17`，適用於小型文件。此模型在翻譯速度與品質之間取得良好平衡，適合進行初步測試與開發用途。
 
+---
 
-### 🌍 Gemini 翻譯指定Properties
-```python
-uv run src/i18n_props.py <properties_file 不含附檔名>
+### 🌍 翻譯 `.properties` 檔案
+
+此功能可將 `.properties` 檔案翻譯為多種語言（如英文 `en`、簡體中文 `zh-CN`），並產生對應語系的輸出檔案（例如：`test_en.properties`、`test_zh-CN.properties`）。
+
+執行指令格式如下：
+
+```bash
+uv run src/i18n_props.py <filename> [--unicode]
 ```
-例如：檔案為 `test.properties`
+
+範例：若要翻譯 `test.properties`，且不使用 Unicode 編碼：
+
 ```bash
 uv run src/i18n_props.py test
 ```
 
-> **⚠️ 警告**  
-> 由於 properties 檔案通常包含大量資料，建議使用 gemini-2.0-flash 模型以確保高效處理。
+> **⚠️ 建議**  
+> `.properties` 檔案常包含大量文字內容，建議選用 `gemini-2.0-flash` 模型以提升翻譯效率與穩定性。

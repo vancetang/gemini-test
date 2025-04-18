@@ -20,7 +20,7 @@
     ```bash
     copy .env.tpl .env
     ```
-    然后，编辑 `.env` 文件，将您获得的 API 密钥填入 `GOOGLE_API_KEY` 字段。
+    然后，编辑 `.env` 文件，将您获取的 API 密钥填入 `GOOGLE_API_KEY` 字段。
 
 3.  🛠️ **安装 uv:**
     *   **推荐 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
@@ -37,22 +37,34 @@
 
 ## 🚀 使用方式
 
-### 🌍 Gemini 翻译 README.md
-```python
+### 🌍 翻译 `README.md`
+
+使用以下命令通过 Google Gemini API 对 `README.md` 进行多语言翻译：
+
+```bash
 uv run src/i18n_readme.py
 ```
 
 > **📝 注意**  
-> 目前使用的模型为 gemini-2.5-flash-preview-04-17，处理小型文件，速度表现与其他模型相差不大。
+> 目前使用的模型为 `gemini-2.5-flash-preview-04-17`，适用于小型文档。此模型在翻译速度与质量之间取得良好平衡，适合进行初步测试与开发。
 
-### 🌍 Gemini 翻译指定 Properties
-```python
-uv run src/i18n_props.py <properties_file 不含附档名>
+---
+
+### 🌍 翻译 `.properties` 文件
+
+此功能可以将 `.properties` 文件翻译为多种语言（如英文 `en`、简体中文 `zh-CN`），并生成对应语言的输出文件（例如：`test_en.properties`、`test_zh-CN.properties`）。
+
+执行命令格式如下：
+
+```bash
+uv run src/i18n_props.py <filename> [--unicode]
 ```
-例如：文件为 `test.properties`
+
+示例：如果要翻译 `test.properties`，且不使用 Unicode 编码：
+
 ```bash
 uv run src/i18n_props.py test
 ```
 
-> **⚠️ 警告**  
-> 由于 properties 文件通常包含大量数据，建议使用 gemini-2.0-flash 模型以确保高效处理。
+> **⚠️ 建议**  
+> `.properties` 文件通常包含大量文本内容，建议选用 `gemini-2.0-flash` 模型以提升翻译效率和稳定性。
