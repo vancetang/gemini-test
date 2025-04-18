@@ -10,9 +10,9 @@ This project is used to test the functionalities of the Google Gemini API.
 
 ## 🔧 Installation
 
-It is recommended to use `uv` for managing the Python environment and dependencies.
+It is recommended to use `uv` for managing your Python environment and dependencies.
 
-1.  🔑 **Get Your Google Gemini API Key:**
+1.  🔑 **Obtain Your Google Gemini API Key:**
     Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
 
 2.  📄 **Configure Environment Variables:**
@@ -20,10 +20,10 @@ It is recommended to use `uv` for managing the Python environment and dependenci
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and fill in your obtained API key in the `GOOGLE_API_KEY` field.
+    Then, edit the `.env` file and paste your obtained API key into the `GOOGLE_API_KEY` field.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-platform):** Please refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation.
+    *   **Recommended (Cross-platform):** Please refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
     *   **Windows (using Chocolatey):**
         ```bash
         choco install -y uv
@@ -43,9 +43,9 @@ uv run src/translate.py
 ```
 
 > **📝 Note**
-> The current model used is gemini-2.5-flash-preview-04-17. For small files, the speed performance is not significantly different from other models.
+> The model currently used is gemini-2.5-flash-preview-04-17. When processing small files, the speed performance is not significantly different from other models.
 
-### 🌍 Gemini Translate Specific Properties File
+### 🌍 Gemini Translate Specified Properties
 ```python
 uv run src/transprop.py <properties_file without extension>
 ```
