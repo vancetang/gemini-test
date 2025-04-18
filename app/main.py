@@ -1,4 +1,3 @@
-import os
 import uvicorn
 import argparse
 from fastapi import FastAPI

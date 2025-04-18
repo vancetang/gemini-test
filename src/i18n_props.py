@@ -8,7 +8,6 @@
 import os
 import pathlib
 import json
-import sys
 import argparse
 from dotenv import load_dotenv
 from google import genai
