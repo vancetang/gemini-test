@@ -10,17 +10,17 @@ This project is for testing the capabilities of the Google Gemini API.
 
 ## 🔧 Installation
 
-It's recommended to use `uv` to manage the Python environment and dependencies.
+It is recommended to use `uv` to manage the Python environment and dependencies.
 
 1.  🔑 **Obtain a Google Gemini API Key:**
     Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
 
-2.  📄 **Set Environment Variables:**
+2.  📄 **Set up Environment Variables:**
     Copy the `.env.tpl` file and rename it to `.env`:
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and fill in your API key in the `GOOGLE_API_KEY` field.
+    Then, edit the `.env` file and fill in the `GOOGLE_API_KEY` field with your API key.
 
 3.  🛠️ **Install uv:**
     *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
@@ -52,7 +52,7 @@ uv run src/i18n_readme.py
 
 ### 🌍 Translate `.properties` Files
 
-This feature allows you to translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`) and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`) and generate output files for the corresponding languages (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
@@ -67,4 +67,4 @@ uv run src/i18n_props.py test
 ```
 
 > **⚠️ Recommendation:**
-> Since `.properties` files often contain a large amount of text, it is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
