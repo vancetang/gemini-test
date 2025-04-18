@@ -1,0 +1,17 @@
+[project]
+name = "gemini-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.115.12",
+    "google-genai>=1.10.0",
+    "load-dotenv>=0.1.0",
+    "uvicorn>=0.34.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.5",
+]
