@@ -1,6 +1,6 @@
 # 🧪 gemini-test
 
-This project is for testing the capabilities of the Google Gemini API.
+This project is for testing the functionalities of the Google Gemini API.
 
 ## 🌐 Available Languages
 
@@ -10,7 +10,7 @@ This project is for testing the capabilities of the Google Gemini API.
 
 ## 🔧 Installation
 
-It is recommended to use `uv` to manage the Python environment and dependencies.
+It's recommended to use `uv` to manage the Python environment and dependencies.
 
 1.  🔑 **Obtain a Google Gemini API Key:**
     Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
@@ -20,17 +20,17 @@ It is recommended to use `uv` to manage the Python environment and dependencies.
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and fill in the `GOOGLE_API_KEY` field with your API key.
+    Then, edit the `.env` file and fill in your API key in the `GOOGLE_API_KEY` field.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
-    *   **Windows (using Chocolatey):**
+    *   **Recommended (Cross-Platform):** Please refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
+    *   **Windows (Using Chocolatey):**
         ```bash
         choco install -y uv
         ```
 
-4.  📦 **Sync Dependencies:**
-    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the required packages:
+4.  📦 **Synchronize Dependencies:**
+    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the necessary packages:
     ```bash
     uv sync
     ```
@@ -46,25 +46,25 @@ uv run src/i18n_readme.py
 ```
 
 > **📝 Note:**
-> The current model used is `gemini-2.5-flash-preview-04-17`, which is suitable for smaller documents. This model strikes a good balance between translation speed and quality, making it ideal for initial testing and development purposes.
+> The current model being used is `gemini-2.5-flash-preview-04-17`, which is suitable for smaller documents. This model strikes a good balance between translation speed and quality, making it ideal for initial testing and development purposes.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`) and generate output files for the corresponding languages (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature can translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate output files for the corresponding languages (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
 ```bash
-uv run src/i18n_props.py <filename> [--unicode]
+uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
-Example: To translate `test.properties` without using Unicode encoding:
+Example: To translate `test.properties` into `English` and `without using Unicode encoding`:
 
 ```bash
-uv run src/i18n_props.py test
+uv run src/i18n_props.py test --lang en
 ```
 
 > **⚠️ Recommendation:**
-> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> `.properties` files often contain a large amount of text content. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.

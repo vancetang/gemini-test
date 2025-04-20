@@ -57,13 +57,13 @@ uv run src/i18n_readme.py
 執行指令格式如下：
 
 ```bash
-uv run src/i18n_props.py <filename> [--unicode]
+uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
-範例：若要翻譯 `test.properties`，且不使用 Unicode 編碼：
+範例：若要翻譯 `test.properties` 為 `英文`，且 `不使用 Unicode 編碼`：
 
 ```bash
-uv run src/i18n_props.py test
+uv run src/i18n_props.py test --lang en
 ```
 
 > **⚠️ 建議**  
