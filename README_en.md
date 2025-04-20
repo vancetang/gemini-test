@@ -23,14 +23,14 @@ It's recommended to use `uv` to manage the Python environment and dependencies.
     Then, edit the `.env` file and fill in your API key in the `GOOGLE_API_KEY` field.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-Platform):** Please refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
-    *   **Windows (Using Chocolatey):**
+    *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
+    *   **Windows (using Chocolatey):**
         ```bash
         choco install -y uv
         ```
 
 4.  📦 **Synchronize Dependencies:**
-    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the necessary packages:
+    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the required packages:
     ```bash
     uv sync
     ```
@@ -45,14 +45,14 @@ Use the following command to translate `README.md` into multiple languages using
 uv run src/i18n_readme.py
 ```
 
-> **📝 Note:**
-> The current model being used is `gemini-2.5-flash-preview-04-17`, which is suitable for smaller documents. This model strikes a good balance between translation speed and quality, making it ideal for initial testing and development purposes.
+> [!NOTE]
+> The current model used is `gemini-2.5-flash-preview-04-17`, which is suitable for smaller documents. This model provides a good balance between translation speed and quality, making it ideal for initial testing and development purposes.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature can translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate output files for the corresponding languages (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature allows you to translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
@@ -66,5 +66,5 @@ Example: To translate `test.properties` into `English` and `without using Unicod
 uv run src/i18n_props.py test --lang en
 ```
 
-> **⚠️ Recommendation:**
-> `.properties` files often contain a large amount of text content. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> [!NOTE]
+> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.

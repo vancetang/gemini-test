@@ -45,7 +45,7 @@
 uv run src/i18n_readme.py
 ```
 
-> **📝 注意**  
+> [!NOTE]  
 > 目前使用的模型為 `gemini-2.5-flash-preview-04-17`，適用於小型文件。此模型在翻譯速度與品質之間取得良好平衡，適合進行初步測試與開發用途。
 
 ---
@@ -66,5 +66,5 @@ uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,L
 uv run src/i18n_props.py test --lang en
 ```
 
-> **⚠️ 建議**  
+> [!NOTE]
 > `.properties` 檔案常包含大量文字內容，建議選用 `gemini-2.0-flash` 模型以提升翻譯效率與穩定性。
