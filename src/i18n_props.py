@@ -3,6 +3,7 @@
 # dependencies = [
 #     "google-genai",
 #     "load-dotenv",
+#     "typing",
 # ]
 # ///
 import os
