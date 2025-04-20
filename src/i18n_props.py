@@ -9,79 +9,36 @@ import os
 import pathlib
 import json
 import argparse
+import logging
+from typing import List, Tuple, Dict
 from dotenv import load_dotenv
 from google import genai
 from utils.unicode import unescape_unicode, escape_non_ascii
 
-# 設置命令列參數解析
-parser = argparse.ArgumentParser(
-    description="翻譯 .properties 檔案到多種語言", usage="%(prog)s filename [--unicode]"
+# 設定日誌格式，包含時間戳記和訊息級別
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
 )
-parser.add_argument("filename", help="要翻譯的 .properties 檔案名稱（不含副檔名）")
-parser.add_argument(
-    "--unicode",
-    action="store_true",
-    default=False,  # 預設為 False
-    help="是否使用 Unicode 編碼（預設為 False）",
-)
-args = parser.parse_args()
+logger = logging.getLogger(__name__)
+# 限制 Google API 的日誌輸出
+logging.getLogger("google_genai.models").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
-# 從參數取得值
-filename_prefix = args.filename
-IS_UNICODE = args.unicode
+# 預設配置，集中管理程式參數
+CONFIG = {
+    # 檔案讀寫的編碼格式
+    "file_encoding": "utf-8",
+    # 每次 API 呼叫的翻譯行數
+    "batch_size": 100,
+    # 預設翻譯目標語言
+    "languages": ["en", "zh-CN"],
+    # 預設模型
+    "gemini_model": os.environ.get("GEMINI_MODEL", "gemini-2.0-flash"),
+}
 
-# 載入環境變數
-load_dotenv()
-
-# 取得腳本所在的目錄
-script_dir = pathlib.Path(__file__).parent
-# 取得專案根目錄 (src 的上一層)
-project_root = script_dir.parent
-
-# 建立輸入檔案的絕對路徑
-input_file_path = project_root / f"{filename_prefix}.properties"
-# 建立輸出檔案的目錄 (專案根目錄)
-output_dir = project_root
-
-print(f"*** 專案根目錄: {project_root}")
-print(f"*** 輸入檔案路徑: {input_file_path}")
-
-# 設定檔案編碼格式
-FILE_ENCODING = "utf-8"
-print(f"*** 產出檔案編碼格式: {FILE_ENCODING}")
-print(f"*** 產出檔案是否轉為Unicode編碼: {IS_UNICODE}")
-
-# 設定 API 金鑰和模型名稱
-google_api_key = os.environ.get("GOOGLE_API_KEY")
-gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
-
-print(f"*** 使用的模型: {gemini_model}")
-
-if not google_api_key:
-    print(
-        "錯誤：找不到 GOOGLE_API_KEY 環境變數。請確定 .env 檔案存在且包含 GOOGLE_API_KEY。"
-    )
-    exit()
-
-client = genai.Client(api_key=google_api_key)
-
-# 讀取輸入檔案的內容 (逐行讀取)
-try:
-    with open(input_file_path, "r", encoding="utf-8") as f:
-        input_lines = [unescape_unicode(line) for line in f.readlines()]
-except FileNotFoundError:
-    print(f"錯誤：找不到檔案：{input_file_path}")
-    exit()
-except Exception as e:
-    print(f"讀取 {input_file_path} 時發生錯誤：{e}")
-    exit()
-
-# 定義要翻譯的語言
-languages = ["en", "zh-CN"]
-
-# 定義批量翻譯的 prompt 模板
-# 要求返回 JSON 格式，key 為原始索引(字串)，value 為翻譯後的內容
-batch_translation_prompt_template = """
+# 批量翻譯的 Prompt 模板，指導 API 進行翻譯
+BATCH_TRANSLATION_PROMPT = """
 請將以下 JSON 物件中的值翻譯成 {language} 語系。根據目標語系的語言習慣調整描述，確保翻譯內容自然且符合當地文化與用語規範。
 請以 JSON 格式返回翻譯結果，格式為一個物件，其中 key 為原文的索引（字串），value 為翻譯後的內容。
 例如：
@@ -99,131 +56,204 @@ batch_translation_prompt_template = """
 以下是要翻譯的 JSON 物件：
 """
 
-# 定義批量大小
-BATCH_SIZE = 100
+def setup_arguments() -> argparse.Namespace:
+    """設定並解析命令列參數"""
+    parser = argparse.ArgumentParser(
+        description="將 .properties 檔案翻譯為指定語言的 .properties 檔案",
+        usage="%(prog)s filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]",
+    )
+    parser.add_argument("filename", help="要翻譯的 .properties 檔案名稱（不含 .properties 副檔名）")
+    parser.add_argument(
+        "--unicode",
+        action="store_true",
+        help="是否將輸出檔案中的非 ASCII 字元轉為 Unicode 編碼（預設：否）",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="",
+        help="翻譯後檔案的儲存目錄（預設：專案根目錄）",
+    )
+    parser.add_argument(
+        "--lang",
+        default=",".join(CONFIG["languages"]),
+        help="以逗號分隔的目標語言清單，例如：en,zh-CN（預設：en,zh-CN）",
+    )
+    return parser.parse_args()
 
-for language in languages:
-    # 建立輸出檔案的絕對路徑，使用提供的檔案名稱前綴
-    output_filename = output_dir / f"{filename_prefix}_{language}.properties"
+def initialize_environment() -> tuple[pathlib.Path, pathlib.Path, genai.Client]:
+    """初始化環境變數、檔案路徑和 API 客戶端"""
+    # 載入 .env 檔案中的環境變數
+    load_dotenv()
+    google_api_key = os.environ.get("GOOGLE_API_KEY")
+    if not google_api_key:
+        logger.error("未找到 GOOGLE_API_KEY 環境變數，請檢查 .env 檔案")
+        raise ValueError("缺少 GOOGLE_API_KEY")
 
-    # 清空目標語系檔案
+    # 取得腳本所在目錄和專案根目錄
+    script_dir = pathlib.Path(__file__).parent
+    project_root = script_dir.parent
+    client = genai.Client(api_key=google_api_key)
+    return script_dir, project_root, client
+
+def read_properties_file(file_path: pathlib.Path) -> List[str]:
+    """讀取 .properties 檔案，並將 Unicode 編碼解碼為可讀字元"""
     try:
-        with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
-            pass  # 開啟寫入模式並立即關閉，清空檔案內容
-        print(f"\n--- 開始翻譯為 {language} ---")
-        print(f"已清空檔案：{output_filename}")
+        with open(file_path, "r", encoding=CONFIG["file_encoding"]) as f:
+            # 逐行讀取並解碼 Unicode 字元
+            return [unescape_unicode(line) for line in f.readlines()]
+    except FileNotFoundError:
+        logger.error("輸入檔案不存在：%s", file_path)
+        raise
     except Exception as e:
-        print(f"清空檔案 {output_filename} 時發生錯誤：{e}")
-        continue  # 跳過此語言的翻譯
+        logger.error("讀取檔案 %s 時發生錯誤：%s", file_path, e)
+        raise
 
-    lines_to_translate_info = []  # 儲存 (index, key, value) 的列表
-    original_lines = []  # 儲存所有原始行
-
-    # 遍歷輸入行，識別需要翻譯的行並儲存資訊
-    for i, line in enumerate(input_lines):
-        original_lines.append(line.rstrip("\n"))  # 儲存原始行內容 (移除換行符)
+def parse_properties_lines(lines: List[str]) -> Tuple[List[str], List[Tuple[int, str, str]]]:
+    """解析 .properties 檔案，提取待翻譯的鍵值對"""
+    lines_to_translate = []
+    original_lines = [line.rstrip("\n") for line in lines]
+    
+    # 遍歷每一行，識別有效的鍵值對
+    for i, line in enumerate(lines):
         stripped_line = line.strip()
-
         # 忽略空行或註解行
         if not stripped_line or stripped_line.startswith("#"):
             continue
-
-        # 處理 key=value 格式的行
+        # 處理 key=value 格式
         if "=" in stripped_line:
-            key, value = stripped_line.split("=", 1)  # 只在第一個 '=' 處分割
-            key = key.strip()
-            value = value.strip()
+            key, value = stripped_line.split("=", 1)
+            key, value = key.strip(), value.strip()
+            if value:
+                lines_to_translate.append((i, key, value))
+    
+    return original_lines, lines_to_translate
 
-            if value:  # 如果值不為空，則加入待翻譯列表
-                lines_to_translate_info.append((i, key, value))
-
-    translated_results = {}  # 儲存翻譯結果 {index: translated_value}
-
-    # 分批處理需要翻譯的行
-    for i in range(0, len(lines_to_translate_info), BATCH_SIZE):
-        batch_info = lines_to_translate_info[i : i + BATCH_SIZE]
-        batch_values_dict = {
-            str(index): value for index, key, value in batch_info
-        }  # 使用索引作為 key
-
-        if not batch_values_dict:
-            continue  # 如果批次為空，跳過
-
-        print(f"  正在處理批次 {i // BATCH_SIZE + 1} (共 {len(batch_info)} 筆)...")
-
-        try:
-            # 構造批量翻譯的 prompt
-            batch_prompt = batch_translation_prompt_template.format(language=language)
-
-            # 呼叫 Gemini API 進行批量翻譯
-            response = client.models.generate_content(
-                model=gemini_model,
-                # 傳遞 prompt 和 JSON 格式的待翻譯內容
-                contents=[
-                    batch_prompt,
-                    json.dumps(batch_values_dict, ensure_ascii=False),
-                ],
-                config=genai.types.GenerateContentConfig(
-                    temperature=0.3,
-                ),
-            )
-
-            # 解析 API 返回的 JSON 結果
-            response_text = response.text.strip()
-            # 嘗試從可能的 markdown 程式碼區塊中提取 JSON
-            if response_text.startswith("```json"):
-                response_text = response_text[len("```json") :].strip()
-                if response_text.endswith("```"):
-                    response_text = response_text[: -len("```")].strip()
-
-            batch_translated_values = json.loads(response_text)
-
-            # 將翻譯結果儲存到 translated_results 字典中
-            for original_index_str, translated_value in batch_translated_values.items():
-                original_index = int(original_index_str)
-                # 儲存翻譯結果並移除首尾空白
-                translated_results[original_index] = translated_value.strip()
-
-        except json.JSONDecodeError as e:
-            print(f"  錯誤：解析 API 返回的 JSON 時發生錯誤：{e}")
-            print(f"  API 返回內容：{response.text}")
-            # JSON 解析失敗，此批次的翻譯結果將會遺失
-        except Exception as e:
-            print(f"  呼叫 API 翻譯批次時發生錯誤：{e}")
-            # API 呼叫失敗，此批次的翻譯結果將會遺失
-
-    # 構造最終的輸出內容
-    output_lines = []
-    # 建立索引到 (key, value) 的映射
-    line_info_map = {
-        index: (key, value) for index, key, value in lines_to_translate_info
-    }
-
-    for i, original_line in enumerate(original_lines):
-        full_line = original_line
-
-        if i in translated_results:
-            if "=" in original_line:
-                key, _ = original_line.split("=", 1)
-                key = key.strip()
-                # 先串接 key=value，再整體進行轉義
-                full_line = f"{key}={translated_results[i]}"
-
-        # 根據輸出編碼決定是否進行非 ASCII 字元轉義
-        if IS_UNICODE:
-            full_line = escape_non_ascii(full_line)
-
-        # 將處理後的行加入輸出列表
-        output_lines.append(full_line)
-
-    # 將所有處理後的行寫入輸出檔案
+def translate_batch(
+    client: genai.Client,
+    values: Dict[str, str],
+    language: str,
+    model: str = CONFIG["gemini_model"],
+) -> Dict[str, str]:
+    """呼叫 Gemini API 進行批量翻譯"""
     try:
-        with open(output_filename, "w", encoding=FILE_ENCODING) as outfile:
-            outfile.write("\n".join(output_lines))
-
-        print(f"翻譯後的內容已成功儲存至 {output_filename}")
-
+        # 構造翻譯提示並附加 JSON 資料
+        prompt = BATCH_TRANSLATION_PROMPT.format(language=language)
+        response = client.models.generate_content(
+            model=model,
+            contents=[prompt, json.dumps(values, ensure_ascii=False)],
+            config=genai.types.GenerateContentConfig(temperature=0.3),
+        )
+        # 處理 API 回應，移除可能的 Markdown 格式
+        response_text = response.text.strip()
+        if response_text.startswith("```json"):
+            response_text = response_text[len("```json") :].rstrip("```").strip()
+        return json.loads(response_text)
+    except json.JSONDecodeError as e:
+        logger.error("無法解析 API 回應的 JSON 格式：%s", e)
+        logger.debug("API 回應內容：%s", response.text)
     except Exception as e:
-        print(f"寫入檔案 {output_filename} 時發生錯誤：{e}")
+        logger.error("呼叫翻譯 API 時發生錯誤：%s", e)
+        return {}
 
-print("\n--- 翻譯完成 ---")
+def translate_properties(
+    client: genai.Client,
+    lines_to_translate: List[Tuple[int, str, str]],
+    language: str,
+) -> Dict[int, str]:
+    """對所有待翻譯行進行翻譯，分批處理以避免 API 限制"""
+    translated_results = {}
+    batch_size = CONFIG["batch_size"]
+    
+    # 分批處理待翻譯行
+    for i in range(0, len(lines_to_translate), batch_size):
+        batch_info = lines_to_translate[i : i + batch_size]
+        batch_values = {str(index): value for index, _, value in batch_info}
+        logger.info("處理第 %d 批次（共 %d 筆資料）", i // batch_size + 1, len(batch_values))
+        
+        # 執行批量翻譯並儲存結果
+        translated_batch = translate_batch(client, batch_values, language)
+        for idx_str, translated_value in translated_batch.items():
+            translated_results[int(idx_str)] = translated_value.strip()
+    
+    return translated_results
+
+def write_output_file(
+    output_file: pathlib.Path,
+    original_lines: List[str],
+    translated_results: Dict[int, str],
+    lines_to_translate: List[Tuple[int, str, str]],
+    use_unicode: bool,
+) -> None:
+    """將翻譯結果寫入輸出檔案，根據需要轉換為 Unicode 編碼"""
+    output_lines = original_lines.copy()
+    line_info_map = {index: (key, value) for index, key, value in lines_to_translate}
+    
+    # 將翻譯結果應用到對應行
+    for idx, translated_value in translated_results.items():
+        if idx in line_info_map:
+            key, _ = line_info_map[idx]
+            full_line = f"{key}={translated_value}"
+             # 根據參數決定是否轉換為 Unicode 編碼
+            if use_unicode:
+                full_line = escape_non_ascii(full_line)
+            output_lines[idx] = full_line
+    
+    try:
+        # 寫入輸出檔案
+        with open(output_file, "w", encoding=CONFIG["file_encoding"]) as f:
+            f.write("\n".join(output_lines))
+        logger.info("翻譯檔案已成功儲存至：%s", output_file)
+    except Exception as e:
+        logger.error("寫入檔案 %s 時發生錯誤：%s", output_file, e)
+        raise
+
+def main():
+    """主函數"""
+    args = setup_arguments()
+    filename_prefix = args.filename
+    use_unicode = args.unicode
+    output_dir = pathlib.Path(args.output_dir) if args.output_dir else None
+    target_languages = args.lang.split(",")
+
+    try:
+        # 初始化環境和檔案路徑
+        _, project_root, client = initialize_environment()
+        input_file = project_root / f"{filename_prefix}.properties"
+        output_dir = output_dir or project_root
+        
+        # 記錄程式執行資訊
+        logger.info("*** 專案根目錄：%s", project_root)
+        logger.info("*** 輸入檔案路徑：%s", input_file)
+        logger.info("*** 輸出檔案編碼：%s", CONFIG["file_encoding"])
+        logger.info("*** 是否使用 Unicode 編碼：%s", use_unicode)
+        logger.info("*** 目標語言清單：%s", ", ".join(target_languages))
+        logger.info("")
+
+        # 讀取並解析輸入檔案
+        lines = read_properties_file(input_file)
+        original_lines, lines_to_translate = parse_properties_lines(lines)
+
+        # 對每種語言進行翻譯
+        for language in target_languages:
+            output_file = output_dir / f"{filename_prefix}_{language}.properties"
+            logger.info("--- 開始翻譯為 %s ---", language)
+
+            # 執行翻譯並寫入結果
+            translated_results = translate_properties(client, lines_to_translate, language)
+            write_output_file(
+                output_file,
+                original_lines,
+                translated_results,
+                lines_to_translate,
+                use_unicode,
+            )
+        
+        logger.info("")
+        logger.info("--- 所有翻譯任務已完成 ---")
+    
+    except Exception as e:
+        logger.error("程式執行過程中發生錯誤：%s", e)
+        exit(1)
+
+if __name__ == "__main__":
+    main()
