@@ -1,6 +1,6 @@
 # 🧪 gemini-test
 
-本项目用于测试 Google Gemini API 的功能。
+本项目用于测试 Google Gemini API 的各项功能。
 
 ## 🌐 可用语言
 
@@ -46,7 +46,9 @@ uv run src/i18n_readme.py
 ```
 
 > [!NOTE]  
-> 目前使用的模型为 `gemini-2.5-flash-preview-04-17`，适用于小型文档。此模型在翻译速度与质量之间取得良好平衡，适合进行初步测试与开发用途。
+> 目前使用的模型是 `gemini-2.5-flash-preview-04-17`  
+> 初步测试显示，此模型虽然翻译速度相较于 `2.0 Flash` 稍慢，但考虑到其具备推理功能且为最新版本，加上 `README.md` 文件不大  
+> 因此选择此模型进行初步测试与开发。
 
 ---
 
