@@ -61,9 +61,13 @@ def setup_arguments() -> argparse.Namespace:
     """設定並解析命令列參數"""
     parser = argparse.ArgumentParser(
         description="將 .properties 檔案翻譯為指定語言的 .properties 檔案",
-        usage="%(prog)s filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]",
+        usage="%(prog)s [--name NAME] [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]",
     )
-    parser.add_argument("filename", help="要翻譯的 .properties 檔案名稱（不含 .properties 副檔名）")
+    parser.add_argument(
+        "--name",
+        required=True,
+        help="要翻譯的 .properties 檔案名稱（不含 .properties 副檔名）"
+    )
     parser.add_argument(
         "--unicode",
         action="store_true",
@@ -211,7 +215,7 @@ def write_output_file(
 def main():
     """主函數"""
     args = setup_arguments()
-    filename_prefix = args.filename
+    filename_prefix = args.name
     use_unicode = args.unicode
     output_dir = pathlib.Path(args.output_dir) if args.output_dir else None
     target_languages = args.lang.split(",")
