@@ -1,6 +1,6 @@
 # 🧪 gemini-test
 
-此项目用于测试 Google Gemini API 的各项功能。
+此项目用于测试 Google Gemini API 的功能。
 
 ## 🌐 可用语言
 
@@ -20,7 +20,7 @@
     ```bash
     copy .env.tpl .env
     ```
-    然后，编辑 `.env` 文件，将您获得的 API 密钥填入 `GOOGLE_API_KEY` 字段。
+    然后，编辑 `.env` 文件，将您获取的 API 密钥填入 `GOOGLE_API_KEY` 字段。
 
 3.  🛠️ **安装 uv:**
     *   **推荐 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
@@ -39,20 +39,20 @@
 
 ### 🌍 翻译 `README.md`
 
-使用以下命令通过 Google Gemini API 对 `README.md` 进行多语言翻译：
+使用以下命令通过 Google Gemini API 对 `README.md` 进行多语系翻译：
 
 ```bash
 uv run src/i18n_readme.py
 ```
 
 > [!NOTE]  
-> 目前使用的模型是 `gemini-2.5-flash-preview-04-17`。初步测试显示，虽然此模型的翻译速度相较于 `2.0 Flash` 稍慢，但考虑到其具备推理功能且为最新版本，加上 `README.md` 文件不大，翻译时间也不会太长，因此选择此模型进行初步测试与开发。
+> 目前使用的模型是 `gemini-2.5-flash-preview-04-17`，初步测试显示，此模型虽然翻译速度相较于 `2.0 Flash` 稍慢，但考虑到其具备推理功能且为最新版本，加上 `README.md` 文件不大，翻译时间也不会太长，因此选择此模型进行初步测试与开发。
 
 ---
 
 ### 🌍 翻译 `.properties` 文件
 
-此功能可以将 `.properties` 文件翻译为多种语言（如英文 `en`、简体中文 `zh-CN`），并生成对应语系的输出文件（例如：`test_en.properties`、`test_zh-CN.properties`）。
+此功能可将 `.properties` 文件翻译为多种语言（如英文 `en`、简体中文 `zh-CN`），并生成对应语系的输出文件（例如：`test_en.properties`、`test_zh-CN.properties`）。
 
 执行命令格式如下：
 
@@ -60,11 +60,11 @@ uv run src/i18n_readme.py
 uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
-示例：若要将 `test.properties` 翻译为 `英文`，且 `不使用 Unicode 编码`：
+示例：若要翻译 `test.properties` 为 `英文`，且 `不使用 Unicode 编码`：
 
 ```bash
 uv run src/i18n_props.py test --lang en
 ```
 
 > [!NOTE]
-> `.properties` 文件通常包含大量文本内容，建议选用 `gemini-2.0-flash` 模型以提升翻译效率和稳定性。
+> `.properties` 文件常包含大量文字内容，建议选用 `gemini-2.0-flash` 模型以提升翻译效率与稳定性。

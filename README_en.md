@@ -1,6 +1,6 @@
 # 🧪 gemini-test
 
-This project is for testing the functionalities of the Google Gemini API.
+This project is a playground for exploring the capabilities of the Google Gemini API.
 
 ## 🌐 Available Languages
 
@@ -10,21 +10,21 @@ This project is for testing the functionalities of the Google Gemini API.
 
 ## 🔧 Installation
 
-It's recommended to use `uv` to manage the Python environment and dependencies.
+It's recommended to use `uv` for managing the Python environment and dependencies.
 
 1.  🔑 **Obtain a Google Gemini API Key:**
-    Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
+    Head over to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
 
 2.  📄 **Set up Environment Variables:**
-    Copy the `.env.tpl` file and rename it to `.env`:
+    Duplicate the `.env.tpl` file and rename it to `.env`:
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and fill in your API key in the `GOOGLE_API_KEY` field.
+    Then, edit the `.env` file and paste your API key into the `GOOGLE_API_KEY` field.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-Platform):** Please refer to the [official uv documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
-    *   **Windows (using Chocolatey):**
+    *   **Recommended (Cross-Platform):** Follow the installation instructions on the [uv official documentation](https://github.com/astral-sh/uv#installation).
+    *   **Windows (Using Chocolatey):**
         ```bash
         choco install -y uv
         ```
@@ -46,13 +46,13 @@ uv run src/i18n_readme.py
 ```
 
 > [!NOTE]
-> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial tests indicate that while this model is slightly slower than `2.0 Flash`, its reasoning capabilities and being the latest version make it suitable for initial testing and development, especially since the `README.md` file isn't too large, so the translation time isn't excessive.
+> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial testing suggests that while the translation speed is slightly slower compared to `2.0 Flash`, the model's reasoning capabilities and its status as the latest version, combined with the relatively small size of the `README.md` file, make it a suitable choice for initial testing and development.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate output files for the corresponding languages (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature allows you to translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate corresponding output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
@@ -67,4 +67,4 @@ uv run src/i18n_props.py test --lang en
 ```
 
 > [!NOTE]
-> `.properties` files often contain a large amount of text content. It's recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
