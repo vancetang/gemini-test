@@ -37,12 +37,23 @@
 
 ## 🚀 使用方式
 
-### 🌍 翻譯 `README.md`
+### 🌍 翻譯文字檔
 
-使用以下指令透過 Google Gemini API 對 `README.md` 進行多語系翻譯：
+此功能可將文字檔翻譯為多種語言（如英文 `en`、簡體中文 `zh-CN`），並產生對應語系的輸出檔案（例如：`README_en.md`、`README_zh-CN.md`）。
+
+> [!NOTE]  
+> 目前是採用一次性讀檔翻譯，所以如果檔案文字太多可能會有問題!!。
+
+執行指令格式如下：
 
 ```bash
-uv run src/i18n_readme.py
+uv run src/i18n_tool.py --name <filename> [--lang <language1,language2,...>]
+```
+
+範例：
+
+```bash
+uv run src/i18n_tool.py --name README.md --lang en
 ```
 
 > [!NOTE]  
@@ -58,13 +69,13 @@ uv run src/i18n_readme.py
 執行指令格式如下：
 
 ```bash
-uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
+uv run src/i18n_props.py --name <filename> [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
 範例：若要翻譯 `test.properties` 為 `英文`，且 `不使用 Unicode 編碼`：
 
 ```bash
-uv run src/i18n_props.py test --lang en
+uv run src/i18n_props.py --name test --lang en
 ```
 
 > [!NOTE]

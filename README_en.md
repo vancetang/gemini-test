@@ -1,6 +1,6 @@
 # 🧪 gemini-test
 
-This project is a playground for exploring the capabilities of the Google Gemini API.
+This project is for testing the capabilities of the Google Gemini API.
 
 ## 🌐 Available Languages
 
@@ -10,61 +10,72 @@ This project is a playground for exploring the capabilities of the Google Gemini
 
 ## 🔧 Installation
 
-It's recommended to use `uv` for managing the Python environment and dependencies.
+It's recommended to use `uv` to manage the Python environment and dependencies.
 
 1.  🔑 **Obtain a Google Gemini API Key:**
-    Head over to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
+    Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
 
 2.  📄 **Set up Environment Variables:**
-    Duplicate the `.env.tpl` file and rename it to `.env`:
+    Copy the `.env.tpl` file and rename it to `.env`:
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and paste your API key into the `GOOGLE_API_KEY` field.
+    Then, edit the `.env` file and fill in the `GOOGLE_API_KEY` field with your API key.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-Platform):** Follow the installation instructions on the [uv official documentation](https://github.com/astral-sh/uv#installation).
+    *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
     *   **Windows (Using Chocolatey):**
         ```bash
         choco install -y uv
         ```
 
 4.  📦 **Sync Dependencies:**
-    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the necessary packages:
+    Run the following command in the project root directory. `uv` will read `pyproject.toml` (or `requirements.txt`) and install the required packages:
     ```bash
     uv sync
     ```
 
 ## 🚀 Usage
 
-### 🌍 Translate `README.md`
+### 🌍 Translate Text Files
 
-Use the following command to translate `README.md` into multiple languages using the Google Gemini API:
+This feature can translate text files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `README_en.md`, `README_zh-CN.md`).
+
+> [!NOTE]
+> Currently, the file is read and translated all at once, so there may be issues if the file contains too much text!
+
+The command format is as follows:
 
 ```bash
-uv run src/i18n_readme.py
+uv run src/i18n_tool.py --name <filename> [--lang <language1,language2,...>]
+```
+
+Example:
+
+```bash
+uv run src/i18n_tool.py --name README.md --lang en
 ```
 
 > [!NOTE]
-> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial testing suggests that while the translation speed is slightly slower compared to `2.0 Flash`, the model's reasoning capabilities and its status as the latest version, combined with the relatively small size of the `README.md` file, make it a suitable choice for initial testing and development.
+> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial testing shows that although this model is slightly slower than `2.0 Flash` in terms of translation speed, considering its reasoning capabilities and the fact that it is the latest version, plus the `README.md` file is not large, the translation time will not be too long. Therefore, this model was chosen for initial testing and development.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature allows you to translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate corresponding output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
 ```bash
-uv run src/i18n_props.py filename [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
+uv run src/i18n_props.py --name <filename> [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
-Example: To translate `test.properties` into `English` and `without using Unicode encoding`:
+Example: To translate `test.properties` to `English` and `without Unicode encoding`:
 
 ```bash
-uv run src/i18n_props.py test --lang en
+uv run src/i18n_props.py --name test --lang en
 ```
 
 > [!NOTE]
-> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> `.properties` files often contain a large amount of text content. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
