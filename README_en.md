@@ -24,7 +24,7 @@ It's recommended to use `uv` to manage the Python environment and dependencies.
 
 3.  🛠️ **Install uv:**
     *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
-    *   **Windows (Using Chocolatey):**
+    *   **Windows (using Chocolatey):**
         ```bash
         choco install -y uv
         ```
@@ -39,10 +39,10 @@ It's recommended to use `uv` to manage the Python environment and dependencies.
 
 ### 🌍 Translate Text Files
 
-This feature can translate text files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `README_en.md`, `README_zh-CN.md`).
+This feature can translate text files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate corresponding language-specific output files (e.g., `README_en.md`, `README_zh-CN.md`).
 
 > [!NOTE]
-> Currently, the file is read and translated all at once, so there may be issues if the file contains too much text!
+> Currently, the translation is done by reading the entire file at once, so there might be issues if the file contains too much text!
 
 The command format is as follows:
 
@@ -57,13 +57,14 @@ uv run src/i18n_tool.py --name README.md --lang en
 ```
 
 > [!NOTE]
-> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial testing shows that although this model is slightly slower than `2.0 Flash` in terms of translation speed, considering its reasoning capabilities and the fact that it is the latest version, plus the `README.md` file is not large, the translation time will not be too long. Therefore, this model was chosen for initial testing and development.
+> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial tests show that while this model is slightly slower than `2.0 Flash` in terms of translation speed, it has reasoning capabilities and is the latest version. Considering that the `README.md` file is not large, the translation time is not too long, so this model was chosen for initial testing and development.
+> For simple translations using `gemini-2.5-flash-preview-04-17`, you can set `thinking_budget=0` to disable the deep thinking mode.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature can translate `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
