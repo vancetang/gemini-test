@@ -2,7 +2,7 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "google-genai",
-#     "load-dotenv",
+#     "dotenv",
 #     "typing",
 # ]
 # ///
