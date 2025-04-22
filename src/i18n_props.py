@@ -40,7 +40,7 @@ CONFIG = {
 
 # 批量翻譯的 Prompt 模板，指導 API 進行翻譯
 BATCH_TRANSLATION_PROMPT = """
-請將以下 JSON 物件中的值翻譯成 {language} 語系。根據目標語系的語言習慣調整描述，確保翻譯內容自然且符合當地文化與用語規範。
+請將以下 JSON 物件中的值翻譯成 {language} 語系。根據目標語系的語言習慣調整描述，確保翻譯內容自然且符合當地文化與用語規範。上下文翻譯的專有名詞請保持一致，且依台灣銀行業常用英文專有名詞做為參考翻譯，
 請以 JSON 格式返回翻譯結果，格式為一個物件，其中 key 為原文的索引（字串），value 為翻譯後的內容。
 例如：
 輸入:
@@ -146,7 +146,7 @@ def translate_batch(
         response = client.models.generate_content(
             model=model,
             contents=[prompt, json.dumps(values, ensure_ascii=False)],
-            config=genai.types.GenerateContentConfig(temperature=0.3),
+            config=genai.types.GenerateContentConfig(temperature=0.2),
         )
         # 處理 API 回應，移除可能的 Markdown 格式
         response_text = response.text.strip()
