@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.115.12",
+    "finnhub-python>=2.4.23",
     "google-genai>=1.10.0",
     "load-dotenv>=0.1.0",
     "uvicorn>=0.34.1",

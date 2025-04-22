@@ -6,3 +6,6 @@ GEMINI_MODEL=gemini-2.0-flash
 
 # Get your Financial Datasets API key from https://financialdatasets.ai/
 FINANCIAL_DATASETS_API_KEY=your-financial-datasets-api-key
+
+# https://finnhub.io/
+FINNHUB_API_KEY=your-finnhub-api-key
