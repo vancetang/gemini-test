@@ -10,7 +10,7 @@ This project is for testing the capabilities of the Google Gemini API.
 
 ## 🔧 Installation
 
-It is recommended to use `uv` to manage the Python environment and dependencies.
+It's recommended to use `uv` to manage your Python environment and dependencies.
 
 1.  🔑 **Obtain a Google Gemini API Key:**
     Go to [Google AI Studio](https://aistudio.google.com/apikey) to create your API key.
@@ -20,11 +20,11 @@ It is recommended to use `uv` to manage the Python environment and dependencies.
     ```bash
     copy .env.tpl .env
     ```
-    Then, edit the `.env` file and fill in the `GOOGLE_API_KEY` field with your API key.
+    Then, edit the `.env` file and fill in your API key in the `GOOGLE_API_KEY` field.
 
 3.  🛠️ **Install uv:**
-    *   **Recommended (Cross-Platform):** Please refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
-    *   **Windows (Using Chocolatey):**
+    *   **Recommended (Cross-Platform):** Refer to the [uv official documentation](https://github.com/astral-sh/uv#installation) for installation instructions.
+    *   **Windows (using Chocolatey):**
         ```bash
         choco install -y uv
         ```
@@ -39,10 +39,10 @@ It is recommended to use `uv` to manage the Python environment and dependencies.
 
 ### 🌍 Translate Text Files
 
-This feature can translate text files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `README_en.md`, `README_zh-CN.md`).
+This feature translates text files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generates corresponding language-specific output files (e.g., `README_en.md`, `README_zh-CN.md`).
 
 > [!NOTE]
-> Currently, the file is read and translated all at once, so there may be issues if the file contains too much text!
+> Currently, the translation process reads the entire file at once.  Large files may cause issues.
 
 The command format is as follows:
 
@@ -57,14 +57,14 @@ uv run src/i18n_tool.py --name README.md --lang en
 ```
 
 > [!NOTE]
-> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial tests show that although this model is slightly slower than `2.0 Flash` in terms of translation speed, considering its reasoning capabilities and the fact that it is the latest version, and given that the `README.md` file is not large, the translation time will not be too long. Therefore, this model was chosen for initial testing and development.
-> For simple translations using `gemini-2.5-flash-preview-04-17`, you can set `thinking_budget=0` to turn off the deep thinking mode.
+> The current model being used is `gemini-2.5-flash-preview-04-17`. Initial tests show that while the translation speed is slightly slower than `2.0 Flash`, it's the latest version with reasoning capabilities. Given that the `README.md` file isn't too large, the translation time isn't excessive. Therefore, this model was chosen for initial testing and development.
+> For simple translations using `gemini-2.5-flash-preview-04-17`, you can set `thinking_budget=0` to disable deep thinking mode.
 
 ---
 
 ### 🌍 Translate `.properties` Files
 
-This feature can translate `.properties` files into multiple languages (such as English `en`, Simplified Chinese `zh-CN`), and generate corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
+This feature translates `.properties` files into multiple languages (e.g., English `en`, Simplified Chinese `zh-CN`) and generates corresponding language-specific output files (e.g., `test_en.properties`, `test_zh-CN.properties`).
 
 The command format is as follows:
 
@@ -72,11 +72,11 @@ The command format is as follows:
 uv run src/i18n_props.py --name <filename> [--unicode] [--output-dir DIR] [--lang LANG1,LANG2,...]
 ```
 
-Example: To translate `test.properties` to `English`, and `without using Unicode encoding`:
+Example: To translate `test.properties` to `English` and `without Unicode encoding`:
 
 ```bash
 uv run src/i18n_props.py --name test --lang en
 ```
 
 > [!NOTE]
-> `.properties` files often contain a large amount of text content. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
+> `.properties` files often contain a large amount of text. It is recommended to use the `gemini-2.0-flash` model to improve translation efficiency and stability.
