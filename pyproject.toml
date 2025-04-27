@@ -5,6 +5,7 @@ description = "Gemini Ai Test"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "beautifulsoup4>=4.13.4",
     "fastapi[standard]>=0.115.12",
     "finnhub-python>=2.4.23",
     "google-genai>=1.10.0",
