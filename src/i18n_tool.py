@@ -34,7 +34,7 @@ CONFIG = {
     "gemini_model": os.environ.get("GEMINI_MODEL", "gemini-2.0-flash"),
 }
 
-def setup_environment() -> tuple[pathlib.Path, pathlib.Path, str]:
+def setup_environment() -> str:
     """設置環境變數和檔案路徑"""
     load_dotenv()
     
@@ -43,11 +43,7 @@ def setup_environment() -> tuple[pathlib.Path, pathlib.Path, str]:
     if not google_api_key:
         raise EnvironmentError("找不到 GOOGLE_API_KEY 環境變數")
     
-    # 計算腳本和專案根目錄路徑
-    script_dir = pathlib.Path(__file__).parent
-    project_root = script_dir.parent
-    
-    return project_root, script_dir, google_api_key
+    return google_api_key
 
 def read_input_file(file_path: pathlib.Path) -> str:
     """讀取輸入檔案內容"""
@@ -117,14 +113,16 @@ def main():
         target_languages = args.lang.split(",")
         
         # 設置環境
-        project_root, _, google_api_key = setup_environment()
+        google_api_key = setup_environment()
         
-        # 驗證輸入檔案
-        input_path = project_root / args.name
+        # 將輸入路徑轉為 pathlib.Path 物件，並解析為絕對路徑
+        input_path = pathlib.Path(args.name).resolve()
         if not input_path.is_file():
             raise FileNotFoundError(f"輸入檔案不存在：{input_path}")
         
-        logger.info("*** 專案根目錄：%s", project_root)
+        # 輸出檔案將生成在輸入檔案的同一目錄下
+        input_dir = input_path.parent
+        
         logger.info("*** 輸入檔案：%s", input_path)
         logger.info("*** 使用模型：%s", CONFIG["gemini_model"])
         logger.info("*** 輸出檔案編碼：%s", CONFIG["file_encoding"])
@@ -146,7 +144,7 @@ def main():
             
             # 生成輸出檔案名稱
             output_filename = f"{input_path.stem}_{lang}{input_path.suffix}"
-            output_path = project_root / output_filename
+            output_path = input_dir / output_filename
             
             # 寫入翻譯結果
             write_output_file(translated_content, output_path)
