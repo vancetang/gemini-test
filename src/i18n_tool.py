@@ -71,7 +71,7 @@ def translate_content(client: genai.Client, model: str, content: str, language: 
                 temperature=0.3,  # 控制輸出隨機性，0.5 為平衡值
                 # 禁用 Thinking Mode(thinking budget)為 0，表示不進行思考
                 # 並不是每個模型都有支援 thinking_config
-                # thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
+                thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
             ),
         )
         return response.text

@@ -10,7 +10,7 @@
 
 ## 🔧 安装
 
-建议使用 `uv` 来管理 Python 环境与依赖包。
+建议使用 `uv` 来管理 Python 环境和依赖包。
 
 1.  🔑 **获取 Google Gemini API 密钥:**
     前往 [Google AI Studio](https://aistudio.google.com/apikey) 创建您的 API 密钥。
@@ -42,7 +42,7 @@
 此功能可将文本文件翻译为多种语言（如英文 `en`、简体中文 `zh-CN`），并生成对应语系的输出文件（例如：`README_en.md`、`README_zh-CN.md`）。
 
 > [!NOTE]  
-> 目前采用一次性读取文件进行翻译，因此如果文件文字太多可能会有问题！
+> 目前采用一次性读取文件进行翻译，因此如果文件文本过多可能会有问题！
 
 执行指令格式如下：
 
@@ -58,7 +58,8 @@ uv run src/i18n_tool.py --name README.md --lang en
 
 > [!NOTE]  
 > 目前使用的模型是 `gemini-2.5-flash-preview-04-17`，初步测试显示，此模型虽然翻译速度相较于 `2.0 Flash` 稍慢，但考虑到其具备推理功能且为最新版本，加上 `README.md` 文件不大，翻译时间也不会太长，因此选择此模型进行初步测试与开发。  
-> 简单翻译使用 `gemini-2.5-flash-preview-04-17` 可设定 `thinking_budget=0` 关闭深度思考模式。
+> 简单翻译使用 `gemini-2.5-flash-preview-04-17` 可设置 `thinking_budget=0` 关闭深度思考模式。
+
 
 ---
 
@@ -79,4 +80,4 @@ uv run src/i18n_props.py --name test --lang en
 ```
 
 > [!NOTE]
-> `.properties` 文件常包含大量文字内容，建议选用 `gemini-2.0-flash` 模型以提升翻译效率与稳定性。
+> `.properties` 文件常包含大量文本内容，建议选用 `gemini-2.0-flash` 模型以提升翻译效率与稳定性。
