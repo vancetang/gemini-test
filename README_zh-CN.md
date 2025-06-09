@@ -23,7 +23,7 @@
     接着，编辑 `.env` 文件，将您获取的 API 密钥填入 `GOOGLE_API_KEY` 字段。
 
 3.  🛠️ **安装 uv:**
-    *   **推荐 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
+    *   **建议 (跨平台):** 请参考 [uv 官方文档](https://github.com/astral-sh/uv#installation) 进行安装。
     *   **Windows (使用 Chocolatey):**
         ```bash
         choco install -y uv
@@ -35,14 +35,14 @@
     uv sync
     ```
 
-## 🚀 使用方式
+## 🚀 使用方法
 
 ### 🌍 翻译文本文件
 
 此功能可将文本文件翻译为多种语言（如英文 `en`、简体中文 `zh-CN`），并生成对应语系的输出文件（例如：`README_en.md`、`README_zh-CN.md`）。
 
 > [!NOTE]  
-> 目前采用一次性读取文件进行翻译，因此如果文件文本过多可能会有问题！
+> 目前采用一次性读取文件进行翻译，因此如果文件文本过多可能会有问题！。
 
 执行指令格式如下：
 
